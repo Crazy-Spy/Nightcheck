@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Onde a Cris vai passar a noite?</title>
+
+    <link href=https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap rel="stylesheet">
+
+    <style>
+
+        body {
+
+            font-family: 'Roboto', sans-serif;
+
+            text-align: center;
+
+            margin-top: 50px;
+
+            background-color: #f0f0f0;
+
+            color: #333;
+
+        }
+
+        #result {
+
+            font-size: 2em;
+
+            margin: 20px;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            transition: background-color 0.3s, color 0.3s;
+
+        }
+
+        .nav-buttons {
+
+            margin: 20px;
+
+        }
+
+        .nav-buttons button {
+
+            margin: 5px;
+
+            padding: 10px 20px;
+
+            font-size: 1em;
+
+            border: none;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+            transition: background-color 0.3s, transform 0.3s;
+
+        }
+
+        .nav-buttons button:hover {
+
+            background-color: #ddd;
+
+            transform: scale(1.05);
+
+        }
+
+        .fora {
+
+            color: red;
+
+            background-color: #ffe6e6;
+
+        }
+
+        .casa {
+
+            color: green;
+
+            background-color: #e6ffe6;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Onde a Cris vai passar a noite?</h1>
+
+    <div id="result"></div>
+
+    <input type="date" id="datePicker" onchange="checkDate()">
+
+    <div class="nav-buttons">
+
+        <button onclick="navigateDate(-10)">-10</button>
+
+        <button onclick="navigateDate(-1)">-1</button>
+
+        <button onclick="navigateToday()">HOJE</button>
+
+        <button onclick="navigateDate(1)">+1</button>
+
+        <button onclick="navigateDate(10)">+10</button>
+
+    </div>
+
+    <div id="selectedDateValue"></div>
+
+ 
+
+    <script>
+
+        function isNoiteFora(date) {
+
+            const startDate = new Date('2024-09-01');
+
+            const diffTime = date.getTime() - startDate.getTime();
+
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            return diffDays % 2 !== 0;
+
+        }
+
+ 
+
+        function formatDate(date) {
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+            const formattedDate = date.toLocaleDateString('pt-BR', options);
+
+            return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+
+        }
+
+ 
+
+        function addOneDay(date) {
+
+            const newDate = new Date(date);
+
+            newDate.setDate(newDate.getDate() + 1);
+
+            return newDate;
+
+        }
+
+ 
+
+        function updateToday() {
+
+            const today = new Date();
+
+            const result = document.getElementById('result');
+
+            const nextDay = addOneDay(today);
+
+            if (isNoiteFora(today)) {
+
+                result.textContent = `Hoje é noite de dormir fora.`;
+
+                result.className = 'fora';
+
+            } else {
+
+                result.textContent = `Hoje é noite de dormir em casa.`;
+
+                result.className = 'casa';
+
+            }
+
+        }
+
+ 
+
+        function checkDate() {
+
+            const datePicker = document.getElementById('datePicker');
+
+            const selectedDate = new Date(datePicker.value);
+
+            const result = document.getElementById('result');
+
+            const selectedDateValue = document.getElementById('selectedDateValue');
+
+//            selectedDateValue.textContent = `Data selecionada: ${datePicker.value}`;
+
+            if (isNaN(selectedDate)) {
+
+                result.textContent = 'Por favor, selecione uma data válida.';
+
+                result.className = '';
+
+                return;
+
+            }
+
+            const nextDay = addOneDay(selectedDate);
+
+            const formattedDate = formatDate(nextDay);
+
+            if (isNoiteFora(selectedDate)) {
+
+                result.textContent = `${formattedDate} é noite de dormir fora.`;
+
+                result.className = 'fora';
+
+            } else {
+
+                result.textContent = `${formattedDate} é noite de dormir em casa.`;
+
+                result.className = 'casa';
+
+            }
+
+        }
+
+ 
+
+        function navigateDate(days) {
+
+            const datePicker = document.getElementById('datePicker');
+
+            let selectedDate = new Date(datePicker.value);
+
+            if (isNaN(selectedDate)) {
+
+                selectedDate = new Date();
+
+            }
+
+            selectedDate.setDate(selectedDate.getDate() + days);
+
+            datePicker.value = selectedDate.toISOString().split('T')[0];
+
+            checkDate();
+
+        }
+
+ 
+
+        function navigateToday() {
+
+            const datePicker = document.getElementById('datePicker');
+
+            const today = new Date();
+
+            datePicker.value = today.toISOString().split('T')[0];
+
+            checkDate();
+
+        }
+
+ 
+
+        updateToday();
+
+    </script>
+
+</body>
+
+</html>
+
