@@ -217,14 +217,14 @@
 
             if (isNoiteFora(selectedDate)) {
 
-                result.textContent = `${formattedDate} é noite de dormir fora.`;
+                result.textContent = `${formattedDate} é noite de dormir fora. Em casa até as 19h30. `;
 
                 result.className = 'fora';
 
             } else {
 
-                result.textContent = `${formattedDate} é noite de dormir em casa.`;
-
+                result.textContent = `${formattedDate} é noite de dormir em casa. Chegará em casa 17h`;
+                
                 result.className = 'casa';
 
             }
