@@ -13,7 +13,10 @@
     </header>
     <main>
         <div id="result"></div>
-        <input type="date" id="datePicker" onchange="checkDate()">
+        <div class="date-container">
+            <label for="datePicker" class="date-label">Escolha a data:</label>
+            <input type="date" id="datePicker" onchange="checkDate()" class="date-picker">
+        </div>
         <div class="nav-buttons">
             <button onclick="navigateDate(-10)">-10</button>
             <button onclick="navigateDate(-1)">-1</button>
