@@ -1,29 +1,57 @@
+:root {
+    --primary-dark: #2c3e50; /* Azul petróleo escuro */
+    --secondary-blue: #34495e; /* Cinza azulado escuro */
+    --background-light: #f8f8f8; /* Branco muito suave */
+    --text-dark: #222;
+    --text-light: #f8f8f8;
+
+    --status-away-bg: rgba(231, 76, 60, 0.1); /* Terracota suave com opacidade */
+    --status-away-text: #c0392b; /* Terracota escuro */
+    --status-home-bg: rgba(46, 204, 113, 0.1); /* Verde folha suave com opacidade */
+    --status-home-text: #27ae60; /* Verde folha escuro */
+
+    --border-color: #ddd;
+    --focus-border: #3498db; /* Azul para foco */
+    --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Open Sans', sans-serif; /* Fonte atualizada */
     text-align: center;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: var(--background-light);
+    color: var(--text-dark);
+    line-height: 1.6em; /* Espaçamento entre linhas melhorado */
 }
 
 header {
-    background-color: #4caf50;
-    color: white;
-    padding: 20px 0;
+    background-color: var(--primary-dark);
+    color: var(--text-light);
+    padding: 30px 0; /* Mais padding */
+    box-shadow: var(--shadow-medium); /* Sombra para profundidade */
 }
 
 h1 {
+    font-family: 'Montserrat', sans-serif; /* Fonte diferente para título */
+    font-weight: 700;
+    font-size: 3em; /* Tamanho maior */
     margin: 0;
-    font-size: 2.5em;
 }
 
 main {
-    margin-top: 50px;
+    max-width: 800px; /* Largura máxima para centralizar conteúdo */
+    margin: 50px auto; /* Centraliza a main */
+    padding: 20px;
+    background-color: white; /* Fundo branco para "card" */
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: var(--shadow-light); /* Sombra suave */
 }
 
 .date-container {
     margin: 20px auto;
+    padding: 20px; /* Mais padding */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -36,27 +64,28 @@ main {
 }
 
 .date-picker {
-    padding: 10px;
+    padding: 12px; /* Ligeiramente maior */
     font-size: 1em;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: border-color 0.3s, box-shadow 0.3s;
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Bordas mais suaves */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna sutil */
+    transition: all 0.3s ease-in-out; /* Transição suave */
 }
 
 .date-picker:focus {
-    border-color: #4caf50;
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+    border-color: var(--focus-border);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2), inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Anel de foco sutil */
     outline: none;
 }
 
 #result {
-    font-size: 2em;
+    font-size: 2.2em; /* Tamanho da fonte ajustado */
     margin: 20px auto;
-    padding: 10px;
-    border-radius: 8px;
-    width: 80%;
-    transition: background-color 0.3s, color 0.3s;
+    padding: 20px; /* Mais padding */
+    border-radius: 10px; /* Bordas arredondadas consistentes */
+    max-width: 90%; /* Ajuste de largura dentro do container */
+    font-weight: 700; /* Texto em negrito */
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out; /* Transição suave */
 }
 
 .nav-buttons {
@@ -67,35 +96,38 @@ main {
 }
 
 .nav-buttons button {
-    padding: 10px 20px;
+    padding: 12px 25px; /* Botões maiores */
     font-size: 1em;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px; /* Bordas arredondadas consistentes */
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, transform 0.3s;
+    background-color: var(--primary-dark); /* Cor principal para os botões */
+    color: var(--text-light);
+    box-shadow: var(--shadow-light); /* Sombra sutil */
+    transition: all 0.3s ease-in-out; /* Transição suave */
 }
 
 .nav-buttons button:hover {
-    background-color: #ddd;
-    transform: scale(1.05);
+    background-color: var(--secondary-blue); /* Cor secundária no hover */
+    transform: translateY(-2px); /* Efeito de 'levantar' */
+    box-shadow: var(--shadow-medium); /* Sombra mais pronunciada no hover */
 }
 
 .fora {
-    color: red;
-    background-color: #ffe6e6;
+    color: var(--status-away-text);
+    background-color: var(--status-away-bg);
 }
 
 .casa {
-    color: green;
-    background-color: #e6ffe6;
+    color: var(--status-home-text);
+    background-color: var(--status-home-bg);
 }
 
 footer {
     margin-top: 50px;
-    padding: 10px 0;
-    background-color: #333;
-    color: white;
+    padding: 15px 0; /* Mais padding */
+    background-color: var(--primary-dark); /* Cor principal para o rodapé */
+    color: var(--text-light);
 }
 
 footer p {
