@@ -61,7 +61,7 @@ A lógica do plantão segue um ciclo alternado de **dia sim / dia não**, calibr
 
 ```text
 Nightcheck/
-├── Index.html      # Estrutura semântica e lógica JavaScript da aplicação
+├── index.html      # Estrutura semântica e lógica JavaScript da aplicação
 ├── styles.css      # Estilos modernos, variáveis CSS, temas claro/escuro e responsividade
 ├── manifest.json   # Configuração de PWA (Web App Manifest) para instalação no celular
 ├── pin.png         # Ícone oficial da aplicação (512x512)
@@ -82,8 +82,8 @@ Como o projeto é 100% estático (não requer compiladores nem Node.js), basta a
    ```bash
    cd Nightcheck
    ```
-3. Abra o arquivo `Index.html`:
-   - No Windows: duplo clique no arquivo ou execute `start Index.html`
+3. Abra o arquivo `index.html`:
+   - No Windows: duplo clique no arquivo ou execute `start index.html`
    - Ou utilize extensões como o *Live Server* do VS Code.
 
 ---

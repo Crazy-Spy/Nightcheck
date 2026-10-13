@@ -2,7 +2,7 @@
   "name": "Nightcheck - Onde a Cris vai passar a noite?",
   "short_name": "Nightcheck",
   "description": "Consulte onde a Cris vai passar a noite e os horários previstos de chegada.",
-  "start_url": "./Index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#10b981",
