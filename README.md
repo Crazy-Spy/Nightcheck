@@ -62,6 +62,7 @@ A lógica do plantão segue um ciclo alternado de **dia sim / dia não**, calibr
 ```text
 Nightcheck/
 ├── index.html      # Estrutura semântica e lógica JavaScript da aplicação
+├── 404.html        # Redirecionamento automático para links e favoritos antigos
 ├── styles.css      # Estilos modernos, variáveis CSS, temas claro/escuro e responsividade
 ├── manifest.json   # Configuração de PWA (Web App Manifest) para instalação no celular
 ├── pin.png         # Ícone oficial da aplicação (512x512)

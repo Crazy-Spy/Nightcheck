@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecionando... • Nightcheck</title>
+    <link rel="icon" type="image/png" href="pin.png">
+    
+    <script>
+        // Redirecionamento instantâneo para links antigos (ex: /Index.html)
+        (function() {
+            var segments = window.location.pathname.split('/').filter(Boolean);
+            var repoName = segments.length > 0 ? segments[0] : 'Nightcheck';
+            var targetUrl = '/' + repoName + '/';
+            window.location.replace(targetUrl);
+        })();
+    </script>
+    <meta http-equiv="refresh" content="0; url=/Nightcheck/">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0b0f17;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .redirect-card {
+            background-color: #151d2a;
+            border: 1px solid #263346;
+            border-radius: 16px;
+            padding: 32px 24px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-size: 1.25rem;
+            margin: 0 0 10px;
+            font-weight: 700;
+        }
+        p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin: 0 0 24px;
+            line-height: 1.5;
+        }
+        .btn-link {
+            display: inline-block;
+            background-color: #10b981;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+        }
+        .btn-link:hover {
+            background-color: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="redirect-card">
+        <div class="icon">🏠</div>
+        <h1>Redirecionando para o Nightcheck...</h1>
+        <p>Você está sendo redirecionado para a versão atualizada da aplicação.</p>
+        <a href="/Nightcheck/" class="btn-link">Acessar Nightcheck</a>
+    </div>
+</body>
+</html>
