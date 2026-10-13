@@ -2,107 +2,306 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onde a Cris vai passar a noite?</title>
-    <link rel="icon" type="image/png" href="https://crazy-spy.github.io/Nightcheck/pin.png">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Nightcheck • Onde a Cris vai passar a noite?</title>
+    
+    <!-- Metatags e Favicon -->
+    <link rel="icon" type="image/png" href="pin.png">
+    <link rel="apple-touch-icon" href="pin.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#059669">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Nightcheck">
+    <meta name="description" content="Consulte onde a Cris vai passar a noite e os horários previstos de chegada em casa.">
+
+    <!-- Tipografia e Estilos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Onde a Cris vai passar a noite?</h1>
+        <div class="header-container">
+            <div class="brand">
+                <img src="pin.png" alt="Nightcheck Logo" class="brand-icon">
+                <div class="brand-text">
+                    <h1>Nightcheck</h1>
+                    <p>Onde a Cris vai passar a noite?</p>
+                </div>
+            </div>
+            <button id="themeToggle" class="theme-toggle-btn" aria-label="Alternar tema claro/escuro" title="Alternar tema">
+                🌙
+            </button>
+        </div>
     </header>
+
     <main>
-        <div id="result"></div>
-        <div class="date-container">
-            <label for="datePicker" class="date-label">Escolha a data:</label>
-            <input type="date" id="datePicker" onchange="checkDate()" class="date-picker">
-        </div>
-        <div class="nav-buttons">
-            <button onclick="navigateDate(-10)">-10</button>
-            <button onclick="navigateDate(-1)">-1</button>
-            <button onclick="navigateToday()">HOJE</button>
-            <button onclick="navigateDate(1)">+1</button>
-            <button onclick="navigateDate(10)">+10</button>
-        </div>
-        <div id="selectedDateValue"></div>
+        <!-- Card Principal de Status -->
+        <section id="statusCard" class="status-card" aria-live="polite">
+            <div class="date-badge">
+                <span id="relativeTag" class="relative-tag" style="display: none;">HOJE</span>
+                <span id="dateText">Carregando data...</span>
+            </div>
+            
+            <div id="iconWrapper" class="icon-wrapper">
+                <span id="statusIcon">🏠</span>
+            </div>
+
+            <h2 id="statusTitle" class="status-title">Dormir em Casa</h2>
+
+            <div>
+                <span id="timeBadge" class="time-badge">
+                    <span>🕒</span>
+                    <strong id="timeText">Chega em casa às 17h</strong>
+                </span>
+            </div>
+        </section>
+
+        <!-- Controles de Navegação -->
+        <section class="controls-container" aria-label="Controles de data">
+            <div class="nav-buttons-primary">
+                <button type="button" class="btn-secondary" onclick="navigateDays(-1)" aria-label="Dia anterior">
+                    ◀ Ontem
+                </button>
+                <button type="button" class="btn-today" onclick="navigateToToday()" aria-label="Ir para hoje">
+                    Hoje
+                </button>
+                <button type="button" class="btn-secondary" onclick="navigateDays(1)" aria-label="Próximo dia">
+                    Amanhã ▶
+                </button>
+            </div>
+
+            <div class="nav-buttons-secondary">
+                <button type="button" class="btn-secondary btn-sm" onclick="navigateDays(-7)" aria-label="Voltar uma semana">
+                    ⏪ -7 dias
+                </button>
+                <button type="button" class="btn-secondary btn-sm" onclick="navigateDays(7)" aria-label="Avançar uma semana">
+                    +7 dias ⏩
+                </button>
+            </div>
+
+            <div class="date-input-group">
+                <label for="datePicker" class="date-input-label">Ou escolha uma data específica:</label>
+                <input type="date" id="datePicker" class="date-picker" onchange="onDatePickerChange()">
+            </div>
+        </section>
+
+        <!-- Previsão dos Próximos 7 Dias -->
+        <section class="forecast-section" aria-label="Previsão dos próximos dias">
+            <div class="section-header">
+                <h2>Previsão para 7 dias</h2>
+                <span>Toque para ver</span>
+            </div>
+            <div id="forecastGrid" class="forecast-grid">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+        </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 Cris. Todos os direitos reservados.</p>
+        <p>&copy; <span id="currentYear">2026</span> Cris. Todos os direitos reservados.</p>
     </footer>
+
     <script>
+        // Data base da regra: 01 de Setembro de 2024
+        // Dia 01/09/2024: Dorme em Casa (diff = 0 -> 0 % 2 === 0)
+        // Dia 02/09/2024: Dorme Fora (diff = 1 -> 1 % 2 !== 0)
+        const BASE_DATE = new Date(2024, 8, 1, 12, 0, 0);
+
+        // Estado da data atualmente em exibição
+        let activeDate = new Date();
+
+        // Utilitários de data imunes a problemas de timezone UTC
+        function toLocalDateString(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function parseLocalDate(dateStr) {
+            if (!dateStr) return new Date();
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day, 12, 0, 0);
+        }
+
+        function getCalendarDayDiff(targetDate, baseDate) {
+            const d1 = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), 12, 0, 0);
+            const d2 = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), 12, 0, 0);
+            const msPerDay = 1000 * 60 * 60 * 24;
+            return Math.round((d1.getTime() - d2.getTime()) / msPerDay);
+        }
+
         function isNoiteFora(date) {
-            const startDate = new Date('2024-09-01');
-            const diffTime = date.getTime() - startDate.getTime();
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays % 2 !== 0;
+            const diffDays = getCalendarDayDiff(date, BASE_DATE);
+            return ((diffDays % 2) + 2) % 2 !== 0;
         }
 
-        function formatDate(date) {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = date.toLocaleDateString('pt-BR', options);
-            return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+        function formatFullDate(date) {
+            const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+            const capitalizedWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+            const day = date.getDate();
+            const month = date.toLocaleDateString('pt-BR', { month: 'long' });
+            const year = date.getFullYear();
+            return `${capitalizedWeekday}, ${day} de ${month} de ${year}`;
         }
 
-        function addOneDay(date) {
-            const newDate = new Date(date);
-            newDate.setDate(newDate.getDate() + 1);
-            return newDate;
-        }
-
-        function updateToday() {
+        function getRelativeLabel(targetDate) {
             const today = new Date();
-            const result = document.getElementById('result');
-            const nextDay = addOneDay(today);
-            if (isNoiteFora(today)) {
-                result.textContent = `Hoje é noite de dormir fora. Em casa até as 19h30.`;
-                result.className = 'fora';
+            const diff = getCalendarDayDiff(targetDate, today);
+            if (diff === 0) return 'HOJE';
+            if (diff === 1) return 'AMANHÃ';
+            if (diff === -1) return 'ONTEM';
+            return null;
+        }
+
+        function renderView(date) {
+            activeDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0);
+            const datePicker = document.getElementById('datePicker');
+            datePicker.value = toLocalDateString(activeDate);
+
+            const statusCard = document.getElementById('statusCard');
+            const relativeTag = document.getElementById('relativeTag');
+            const dateText = document.getElementById('dateText');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTitle = document.getElementById('statusTitle');
+            const timeText = document.getElementById('timeText');
+
+            const relativeLabel = getRelativeLabel(activeDate);
+            if (relativeLabel) {
+                relativeTag.textContent = relativeLabel;
+                relativeTag.style.display = 'inline-block';
             } else {
-                result.textContent = `Hoje é noite de dormir em casa. Chegará em casa 17h.`;
-                result.className = 'casa';
+                relativeTag.style.display = 'none';
             }
-        }
 
-        function checkDate() {
-            const datePicker = document.getElementById('datePicker');
-            const selectedDate = new Date(datePicker.value);
-            const result = document.getElementById('result');
-            const selectedDateValue = document.getElementById('selectedDateValue');
-            if (isNaN(selectedDate)) {
-                result.textContent = 'Por favor, selecione uma data válida.';
-                result.className = '';
-                return;
-            }
-            const nextDay = addOneDay(selectedDate);
-            const formattedDate = formatDate(nextDay);
-            if (isNoiteFora(selectedDate)) {
-                result.textContent = `${formattedDate} é noite de dormir fora. Em casa até as 19h30.`;
-                result.className = 'fora';
+            dateText.textContent = formatFullDate(activeDate);
+
+            const dormeFora = isNoiteFora(activeDate);
+
+            if (dormeFora) {
+                statusCard.className = 'status-card fora';
+                statusIcon.textContent = '🌙';
+                if (relativeLabel === 'HOJE') {
+                    statusTitle.textContent = 'Hoje a Cris dorme no plantão';
+                } else if (relativeLabel === 'AMANHÃ') {
+                    statusTitle.textContent = 'Amanhã a Cris dorme no plantão';
+                } else {
+                    statusTitle.textContent = 'Noite de plantão (dorme fora)';
+                }
+                timeText.textContent = 'Está em casa até as 19h30.';
             } else {
-                result.textContent = `${formattedDate} é noite de dormir em casa. Chegará em casa 17h`;
-                result.className = 'casa';
+                statusCard.className = 'status-card casa';
+                statusIcon.textContent = '🏠';
+                if (relativeLabel === 'HOJE') {
+                    statusTitle.textContent = 'Hoje a Cris dorme em casa';
+                } else if (relativeLabel === 'AMANHÃ') {
+                    statusTitle.textContent = 'Amanhã a Cris dorme em casa';
+                } else {
+                    statusTitle.textContent = 'Noite de dormir em casa';
+                }
+                timeText.textContent = 'Chega em casa às 17h';
             }
+
+            renderForecast();
         }
 
-        function navigateDate(days) {
-            const datePicker = document.getElementById('datePicker');
-            let selectedDate = new Date(datePicker.value);
-            if (isNaN(selectedDate)) {
-                selectedDate = new Date();
-            }
-            selectedDate.setDate(selectedDate.getDate() + days);
-            datePicker.value = selectedDate.toISOString().split('T')[0];
-            checkDate();
-        }
+        function renderForecast() {
+            const forecastGrid = document.getElementById('forecastGrid');
+            forecastGrid.innerHTML = '';
 
-        function navigateToday() {
-            const datePicker = document.getElementById('datePicker');
             const today = new Date();
-            datePicker.value = today.toISOString().split('T')[0];
-            checkDate();
+            const diffFromToday = Math.abs(getCalendarDayDiff(activeDate, today));
+            // Se estiver navegando próximo a hoje, inicia por hoje; se foi longe, inicia da activeDate
+            const startDate = diffFromToday <= 6 ? today : activeDate;
+
+            for (let i = 0; i < 7; i++) {
+                const dayDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i, 12, 0, 0);
+                const fora = isNoiteFora(dayDate);
+                const isActive = getCalendarDayDiff(dayDate, activeDate) === 0;
+                const relativeLabel = getRelativeLabel(dayDate);
+
+                const card = document.createElement('div');
+                card.className = `forecast-card ${fora ? 'fora' : 'casa'} ${isActive ? 'active' : ''}`;
+                card.tabIndex = 0;
+                card.setAttribute('role', 'button');
+                card.setAttribute('aria-label', `Ver detalhes de ${formatFullDate(dayDate)}`);
+
+                let weekdayLabel = dayDate.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+                if (relativeLabel === 'HOJE') weekdayLabel = 'Hoje';
+                else if (relativeLabel === 'AMANHÃ') weekdayLabel = 'Amanhã';
+
+                const dayMonth = `${String(dayDate.getDate()).padStart(2, '0')}/${String(dayDate.getMonth() + 1).padStart(2, '0')}`;
+
+                card.innerHTML = `
+                    <span class="forecast-weekday">${weekdayLabel}</span>
+                    <span class="forecast-date">${dayMonth}</span>
+                    <span class="forecast-icon">${fora ? '🌙' : '🏠'}</span>
+                    <span class="forecast-pill">${fora ? 'Plantão' : 'Em casa'}</span>
+                    <span class="forecast-time">${fora ? 'Sai às 19h30' : 'Chega às 17h'}</span>
+                `;
+
+                card.onclick = () => renderView(dayDate);
+                card.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        renderView(dayDate);
+                    }
+                };
+
+                forecastGrid.appendChild(card);
+            }
         }
 
-        updateToday();
+        function navigateDays(days) {
+            const nextDate = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate() + days, 12, 0, 0);
+            renderView(nextDate);
+        }
+
+        function navigateToToday() {
+            renderView(new Date());
+        }
+
+        function onDatePickerChange() {
+            const datePicker = document.getElementById('datePicker');
+            if (datePicker.value) {
+                renderView(parseLocalDate(datePicker.value));
+            }
+        }
+
+        // ================= TEMA ESCURO / CLARO =================
+        const themeToggle = document.getElementById('themeToggle');
+        
+        function initTheme() {
+            const savedTheme = localStorage.getItem('nightcheck_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '🌙';
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', nextTheme);
+            themeToggle.textContent = nextTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('nightcheck_theme', nextTheme);
+        });
+
+        // Ano dinâmico no footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Inicialização
+        initTheme();
+        navigateToToday();
     </script>
 </body>
 </html>
